@@ -4,3 +4,13 @@ node_modules/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+
+__pycache__
+app.egg-info
+*.pyc
+.mypy_cache
+.coverage
+htmlcov
+.cache
+.venv
