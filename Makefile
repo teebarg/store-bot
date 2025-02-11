@@ -78,4 +78,4 @@ pre-commit-docker:
 	npx concurrently --kill-others-on-fail --prefix "[{name}]" --names "lint,test" \
 	--prefix-colors "bgRed.bold.white,bgGreen.bold.white,bgBlue.bold.white,bgMagenta.bold.white" \
 	"docker exec chatbot-1 ./scripts/lint.sh" \
-	"docker exec chatbot-1 ./scripts/test.sh" 
+	"docker exec chatbot-1 ./scripts/test.sh"
