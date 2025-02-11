@@ -28,9 +28,6 @@ jobs:
                 tags: |
                   type=raw,value=latest
                   type=sha
-                  type=version,value=${{ github.event.inputs.version }}
-                  type=branch,value=${{ github.ref_name }}
-                  type=commit,value=${{ github.sha }}
 
             - name: Build and push Docker image
               uses: docker/build-push-action@v6
