@@ -30,8 +30,11 @@ faq_data = [
 # 2. Load an embedding model to compute FAQ embeddings
 embedder = SentenceTransformer('all-MiniLM-L6-v2')
 faq_texts = [item["question"] for item in faq_data]
-faq_embeddings = embedder.encode(faq_texts, convert_to_tensor=False)
-faq_embeddings = np.array(faq_embeddings).astype("float32")
+# faq_embeddings = embedder.encode(faq_texts, convert_to_tensor=False)
+# faq_embeddings = np.array(faq_embeddings).astype("float32")
+
+faq_embeddings = embedder.encode(faq_texts, convert_to_numpy=True)
+faq_embeddings = faq_embeddings.astype("float16")
 
 # 3. Build a FAISS index for fast similarity search (using L2 distance)
 dimension = faq_embeddings.shape[1]
