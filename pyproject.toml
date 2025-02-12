@@ -23,7 +23,7 @@ dependencies = [
     "faiss-cpu>=1.10.0",
     "sentence-transformers>=3.4.1",
     "transformers>=4.48.2",
-    "numpy==1.26.4",
+    "numpy==2.2.2",
 ]
 
 [tool.uv]
