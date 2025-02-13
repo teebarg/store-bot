@@ -51,14 +51,12 @@ FROM python:3.9-slim
 WORKDIR /app
 
 # Set environment variables
-ENV PYTHONPATH=/app \
-    PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+ENV PYTHONPATH=/app
 
 # Install runtime dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-    libgomp1 \  
+    libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy only necessary files from builder
@@ -66,9 +64,6 @@ COPY --from=builder /usr/local/lib/python3.9/site-packages/ /usr/local/lib/pytho
 COPY --from=builder /app/scripts ./scripts
 COPY --from=builder /app/pyproject.toml /app/alembic.ini ./
 COPY --from=builder /app/app ./app
-
-# Set fastapi-specific environment variables
-ENV PORT=8000
 
 # Expose the port
 EXPOSE 8000

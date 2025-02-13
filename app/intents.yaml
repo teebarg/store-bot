@@ -1,0 +1,41 @@
+version: "3.0"
+nlu:
+  - intent: greet
+    examples: |
+      - hi
+      - hello
+      - hey
+      - greetings
+      - good morning
+      - good afternoon
+      - good evening
+      - what up
+      - what's up
+      - you good
+  - intent: goodbye
+    examples: |
+      - bye
+      - goodbye
+      - see you later
+      - farewell
+  - intent: thank
+    examples: |
+      - thank you
+      - thanks
+      - appreciate it
+      - good looking out
+      - grateful
+  - intent: check
+    examples: |
+      - how are you
+      - how are you doing
+      - how's it going
+      - you okay?
+      - you good?
+  - intent: help
+    examples: |
+      - help
+      - help me
+      - can you help me
+      - need help
+      - help please

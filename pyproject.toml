@@ -10,8 +10,6 @@ dependencies = [
     "passlib[bcrypt]<2.0.0,>=1.7.4",
     "tenacity<9.0.0,>=8.2.3",
     "pydantic>2.0",
-    "emails<1.0,>=0.6",
-    "jinja2<4.0.0,>=3.1.4",
     "alembic<2.0.0,>=1.12.1",
     "httpx<1.0.0,>=0.25.1",
     "sqlmodel<1.0.0,>=0.0.21",
@@ -19,11 +17,9 @@ dependencies = [
     "bcrypt==4.2.1",
     "pydantic-settings<3.0.0,>=2.2.1",
     "pyjwt<3.0.0,>=2.8.0",
+    "PyYAML==6.0.2",
     # AI/ML dependencies
-    "faiss-cpu>=1.10.0",
-    "sentence-transformers>=3.4.1",
-    "transformers>=4.48.2",
-    "numpy==1.26.4",
+    "sentence-transformers>=3.4.1"
 ]
 
 [tool.uv]
