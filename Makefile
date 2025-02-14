@@ -1,25 +1,23 @@
 # Phony targets
-.PHONY: help dev build start lint test prettier docker-dev docker-build docker-up docker-down
+.PHONY: help dev build lint test prettier startTest build stopTest
 
 .EXPORT_ALL_VARIABLES:
 
-PROJECT_SLUG := "chatbot"
-APP_NAME := $(PROJECT_SLUG)
+PROJECT_SLUG := "store-bot"
 DOCKER_HUB := beafdocker
+TAG := $(shell git rev-parse --short HEAD)
 
 # Help target
 help:
 	@echo "Available commands:"
 	@echo "  make dev         - Run the development server"
 	@echo "  make build       - Build the production application"
-	@echo "  make start       - Start the production server"
 	@echo "  make lint        - Run linter"
 	@echo "  make test        - Run e2e tests"
 	@echo "  make prettier    - Run prettier"
-	@echo "  make docker-dev  - Run the development server in Docker"
-	@echo "  make docker-build - Build Docker image"
-	@echo "  make docker-up   - Start Docker containers"
-	@echo "  make docker-down - Stop Docker containers"
+	@echo "  make startTest  - Run the development server in Docker"
+	@echo "  make build - Build Docker image"
+	@echo "  make stopTest - Stop Docker containers"
 
 # ANSI color codes
 GREEN=$(shell tput -Txterm setaf 2)
@@ -38,6 +36,14 @@ updateTest:
 
 stopTest:
 	@COMPOSE_PROJECT_NAME=$(PROJECT_SLUG) docker compose down
+
+build:
+	docker build -t $(PROJECT_SLUG) .
+
+stage:
+	docker tag store-bot:latest $(DOCKER_HUB)/$(PROJECT_SLUG):latest
+	docker tag store-bot:latest $(DOCKER_HUB)/$(PROJECT_SLUG):${TAG}
+	docker push -a $(DOCKER_HUB)/$(PROJECT_SLUG)
 
 
 # Utilities
