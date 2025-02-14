@@ -1,49 +1,49 @@
-FROM python:3.10
+# FROM python:3.10
 
-ENV PYTHONUNBUFFERED=1
+# ENV PYTHONUNBUFFERED=1
 
-WORKDIR /app/
+# WORKDIR /app/
 
-# Install uv
-# Ref: https://docs.astral.sh/uv/guides/integration/docker/#installing-uv
-COPY --from=ghcr.io/astral-sh/uv:0.5.11 /uv /uvx /bin/
+# # Install uv
+# # Ref: https://docs.astral.sh/uv/guides/integration/docker/#installing-uv
+# COPY --from=ghcr.io/astral-sh/uv:0.5.11 /uv /uvx /bin/
 
-# Place executables in the environment at the front of the path
-# Ref: https://docs.astral.sh/uv/guides/integration/docker/#using-the-environment
-ENV PATH="/app/.venv/bin:$PATH"
+# # Place executables in the environment at the front of the path
+# # Ref: https://docs.astral.sh/uv/guides/integration/docker/#using-the-environment
+# ENV PATH="/app/.venv/bin:$PATH"
 
-# Compile bytecode
-# Ref: https://docs.astral.sh/uv/guides/integration/docker/#compiling-bytecode
-ENV UV_COMPILE_BYTECODE=1
+# # Compile bytecode
+# # Ref: https://docs.astral.sh/uv/guides/integration/docker/#compiling-bytecode
+# ENV UV_COMPILE_BYTECODE=1
 
-# uv Cache
-# Ref: https://docs.astral.sh/uv/guides/integration/docker/#caching
-ENV UV_LINK_MODE=copy
+# # uv Cache
+# # Ref: https://docs.astral.sh/uv/guides/integration/docker/#caching
+# ENV UV_LINK_MODE=copy
 
-# Install dependencies
-# Ref: https://docs.astral.sh/uv/guides/integration/docker/#intermediate-layers
-RUN --mount=type=cache,target=/root/.cache/uv \
-    --mount=type=bind,source=uv.lock,target=uv.lock \
-    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    uv sync --frozen --no-install-project
+# # Install dependencies
+# # Ref: https://docs.astral.sh/uv/guides/integration/docker/#intermediate-layers
+# RUN --mount=type=cache,target=/root/.cache/uv \
+#     --mount=type=bind,source=uv.lock,target=uv.lock \
+#     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+#     uv sync --frozen --no-install-project
 
-ENV PYTHONPATH=/app
+# ENV PYTHONPATH=/app
 
-COPY ./scripts /app/scripts
+# COPY ./scripts /app/scripts
 
-COPY ./pyproject.toml ./uv.lock /app/
+# COPY ./pyproject.toml ./uv.lock /app/
 
-COPY ./app /app/app
+# COPY ./app /app/app
 
-# Sync the project
-# Ref: https://docs.astral.sh/uv/guides/integration/docker/#intermediate-layers
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync
+# # Sync the project
+# # Ref: https://docs.astral.sh/uv/guides/integration/docker/#intermediate-layers
+# RUN --mount=type=cache,target=/root/.cache/uv \
+#     uv sync
 
-# Expose the port on which FastAPI runs
-EXPOSE 8000
+# # Expose the port on which FastAPI runs
+# EXPOSE 8000
 
-CMD ["fastapi", "run", "--workers", "4", "app/main.py"]
+# CMD ["fastapi", "run", "--workers", "4", "app/main.py"]
 
 
 # # Second stage
@@ -121,3 +121,54 @@ CMD ["fastapi", "run", "--workers", "4", "app/main.py"]
 
 # # Run the application
 # CMD ["fastapi", "run", "--workers", "4", "app/main.py"]
+
+
+# Stage 1: Build dependencies
+FROM python:3.10 AS builder
+
+ENV PYTHONUNBUFFERED=1
+WORKDIR /app/
+
+# Install uv
+COPY --from=ghcr.io/astral-sh/uv:0.5.11 /uv /uvx /bin/
+
+# Setup environment paths
+ENV PATH="/app/.venv/bin:$PATH"
+ENV UV_COMPILE_BYTECODE=1
+ENV UV_LINK_MODE=copy
+
+# Use cached layers for dependencies
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    uv sync --frozen --no-install-project
+
+# Copy project files
+COPY ./pyproject.toml ./uv.lock /app/
+COPY ./app /app/app
+COPY ./scripts /app/scripts
+
+# Install final dependencies
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync
+
+# Stage 2: Final lightweight image
+FROM python:3.10-slim AS runner
+
+ENV PYTHONUNBUFFERED=1
+WORKDIR /app/
+
+# Copy pre-installed dependencies from the builder stage
+COPY --from=builder /app/.venv /app/.venv
+COPY --from=builder /app/app /app/app
+COPY --from=builder /app/scripts /app/scripts
+
+# Ensure the virtual environment is active
+ENV PATH="/app/.venv/bin:$PATH"
+ENV PYTHONPATH=/app
+
+# Expose the FastAPI port
+EXPOSE 8000
+
+CMD ["fastapi", "run", "--workers", "4", "app/main.py", "--host", "0.0.0.0", "--port", "8000"]
+
