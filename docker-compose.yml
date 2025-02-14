@@ -1,7 +1,28 @@
 services:
   backend:
-    image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
-    restart: always
+    image: 'store-bot:${TAG-latest}'
+    restart: no
+    ports:
+      - "8000:8000"
+    # command: sleep infinity  # Infinite loop to keep container alive doing nothing
+    command:
+      - fastapi
+      - run
+      - --reload
+      - "app/main.py"
+    develop:
+      watch:
+        - path: .
+          action: sync
+          target: /app
+          ignore:
+            - ./.venv
+            - .venv
+        - path: ./pyproject.toml
+          action: rebuild
+    # TODO: remove once coverage is done locally
+    volumes:
+      - ./htmlcov:/app/htmlcov
     networks:
       - traefik-public
       - default

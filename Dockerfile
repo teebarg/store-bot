@@ -40,6 +40,9 @@ COPY ./app /app/app
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync
 
+# Expose the port on which FastAPI runs
+EXPOSE 8000
+
 CMD ["fastapi", "run", "--workers", "4", "app/main.py"]
 
 

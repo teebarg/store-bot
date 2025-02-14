@@ -1,5 +1,4 @@
 services:
-  # DOMAIN=localhost.tiangolo.com
   proxy:
     image: traefik:3.0
     volumes:
@@ -39,32 +38,6 @@ services:
     networks:
       - traefik-public
       - default
-
-  backend:
-    restart: "no"
-    ports:
-      - "8000:8000"
-    build:
-      context: .
-    # command: sleep infinity  # Infinite loop to keep container alive doing nothing
-    command:
-      - fastapi
-      - run
-      - --reload
-      - "app/main.py"
-    develop:
-      watch:
-        - path: .
-          action: sync
-          target: /app
-          ignore:
-            - ./.venv
-            - .venv
-        - path: ./pyproject.toml
-          action: rebuild
-    # TODO: remove once coverage is done locally
-    volumes:
-      - ./htmlcov:/app/htmlcov
 
 networks:
   traefik-public:
