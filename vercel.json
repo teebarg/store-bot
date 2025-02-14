@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "buildCommand": "pip install -r requirements.txt",
+  "devCommand": "fastapi run --workers 4 app/main.py",
+  "builds": [
+    {
+      "src": "app/main.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "app/main.py"
+    }
+  ]
+}

@@ -1,10 +1,9 @@
 from typing import List
-from sqlmodel import SQLModel
 from pydantic import BaseModel
 
 
 # Generic message
-class Message(SQLModel):
+class Message(BaseModel):
     message: str
 
 class Question(BaseModel):

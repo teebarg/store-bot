@@ -15,3 +15,5 @@ htmlcov
 .cache
 .venv
 .env
+.vercel
+.qodo
